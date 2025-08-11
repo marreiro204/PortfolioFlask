@@ -24,10 +24,13 @@ Preferred communication style: Simple, everyday language.
 - **Middleware**: ProxyFix for proper HTTPS URL generation in hosted environments
 
 ## Database Schema
-- **Project Model**: Stores portfolio projects with title, description, technology stack, URLs (GitHub/demo), images, and featured status
-- **Skill Model**: Manages technical skills with categories and proficiency levels (1-5 scale)
-- **Contact Model**: Handles contact form submissions with read status tracking
-- **Database Migration**: Automatic table creation on application startup
+- **User Model**: Stores user information with id, nome, email, senha_hash, foto_url, criado_em
+- **Project Model**: Stores portfolio projects with id, titulo, descricao, imagem_url, status ('draft'/'published'), criado_em, atualizado_em, user_id (FK)
+- **Achievement Model**: Manages user achievements with id, titulo, descricao, data, imagem_url, user_id (FK)
+- **Comment Model**: Handles project comments with id, conteudo, criado_em, user_id (FK), project_id (FK)
+- **Like Model**: Manages project likes with id, user_id (FK), project_id (FK) - unique constraint prevents duplicate likes
+- **Notification Model**: Stores user notifications with id, tipo, mensagem, lida (boolean), criado_em, user_id (FK)
+- **Database Migration**: Automatic table creation on application startup using SQLite
 
 ## Security and Configuration
 - **Environment Variables**: Database URL and session secret configuration
@@ -48,9 +51,9 @@ Preferred communication style: Simple, everyday language.
 - **Werkzeug**: WSGI utilities including ProxyFix middleware
 
 ## Database Support
-- **SQLite**: Default database for development (portfolio.db)
-- **PostgreSQL**: Production database support via DATABASE_URL environment variable
+- **SQLite**: Primary database for development and production (portfolio.db)
 - **Connection Management**: Built-in connection pooling and health checks
+- **Relationships**: Full foreign key support with cascade delete operations
 
 ## Hosting and Deployment
 - **Replit Integration**: Optimized for Replit hosting environment
