@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Notificações{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-bell me-2"></i>Notificações</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+    
+    <div class="card bg-dark border-secondary">
+        <div class="card-body">
+            {% if notifications %}
+                <div class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <div class="list-group-item bg-secondary border-secondary {% if not notification.lida %}border-start border-primary border-3{% endif %}">
+                        <div class="d-flex w-100 justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-1">
+                                    {% if notification.tipo == 'comment' %}
+                                        <i class="fas fa-comment text-primary me-2"></i>
+                                    {% elif notification.tipo == 'like' %}
+                                        <i class="fas fa-heart text-danger me-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-bell text-info me-2"></i>
+                                    {% endif %}
+                                    
+                                    <span class="text-capitalize badge bg-{{ 'primary' if notification.tipo == 'comment' else 'danger' if notification.tipo == 'like' else 'info' }}">
+                                        {{ notification.tipo }}
+                                    </span>
+                                    
+                                    {% if not notification.lida %}
+                                        <span class="badge bg-success ms-2">Nova</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <p class="mb-1">{{ notification.mensagem }}</p>
+                            </div>
+                            
+                            <small class="text-muted">
+                                {{ notification.criado_em.strftime('%d/%m/%Y às %H:%M') }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Nenhuma notificação</h4>
+                    <p class="text-muted">Você não tem notificações no momento.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

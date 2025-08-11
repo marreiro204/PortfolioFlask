@@ -8,7 +8,10 @@ class User(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     senha_hash = db.Column(db.String(256), nullable=False)
     foto_url = db.Column(db.String(200))
+    is_admin = db.Column(db.Boolean, default=False)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    reset_token = db.Column(db.String(100))
+    reset_token_expires = db.Column(db.DateTime)
     
     # Relationships
     projects = db.relationship('Project', backref='user', lazy=True, cascade='all, delete-orphan')
@@ -26,7 +29,9 @@ class Project(db.Model):
     titulo = db.Column(db.String(100), nullable=False)
     descricao = db.Column(db.Text, nullable=False)
     imagem_url = db.Column(db.String(200))
+    tags = db.Column(db.String(200))  # Comma-separated tags
     status = db.Column(db.String(20), nullable=False, default='draft')  # 'draft' or 'published'
+    likes_count = db.Column(db.Integer, default=0)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

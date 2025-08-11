@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-trophy me-2"></i>{{ title }}</h2>
+        <a href="{{ url_for('admin_achievements') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.titulo.label(class="form-label") }}
+                            {{ form.titulo(class="form-control") }}
+                            {% for error in form.titulo.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.descricao.label(class="form-label") }}
+                            {{ form.descricao(class="form-control", rows="4") }}
+                            {% for error in form.descricao.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.data_conquista.label(class="form-label") }}
+                            {{ form.data_conquista(class="form-control", type="date") }}
+                            <small class="form-text text-muted">Data da conquista</small>
+                            {% for error in form.data_conquista.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.imagem.label(class="form-label") }}
+                            {{ form.imagem(class="form-control") }}
+                            {% for error in form.imagem.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            {% if achievement and achievement.imagem_url %}
+                                <small class="form-text text-muted">
+                                    Imagem atual: {{ achievement.imagem_url }}
+                                </small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('admin_achievements') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle me-2"></i>Exemplos de Conquistas</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-certificate text-success me-2"></i>
+                            <small>Certificações</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-graduation-cap text-primary me-2"></i>
+                            <small>Formações acadêmicas</small>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-medal text-warning me-2"></i>
+                            <small>Prêmios e reconhecimentos</small>
+                        </li>
+                        <li>
+                            <i class="fas fa-rocket text-info me-2"></i>
+                            <small>Marcos profissionais</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

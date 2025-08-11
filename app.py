@@ -18,6 +18,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # needed for url_for to generate with https
 
+# Configure WTF CSRF
+app.config['WTF_CSRF_ENABLED'] = True
+
 # Configure the database - Using SQLite
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///portfolio.db"
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -33,15 +36,6 @@ with app.app_context():
     # Import models to ensure tables are created
     import models  # noqa: F401
     db.create_all()
-
-@app.route('/')
-def index():
-    """Home route displaying welcome message in Portuguese"""
-    try:
-        return render_template('index.html', title="Portfólio")
-    except Exception as e:
-        app.logger.error(f"Error rendering home page: {e}")
-        return "Erro interno do servidor", 500
 
 @app.errorhandler(404)
 def page_not_found(error):
