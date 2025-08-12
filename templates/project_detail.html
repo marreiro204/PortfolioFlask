@@ -9,7 +9,7 @@
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Início</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Início</a></li>
                     <li class="breadcrumb-item active">{{ project.titulo }}</li>
                 </ol>
             </nav>
@@ -33,7 +33,7 @@
                         <h1 class="h2 mb-0">{{ project.titulo }}</h1>
                         <div class="d-flex align-items-center">
                             {% if session.user_id %}
-                            <form method="POST" action="{{ url_for('toggle_like', id=project.id) }}" class="me-2">
+                            <form method="POST" action="{{ url_for('main.toggle_like', id=project.id) }}" class="me-2">
                                 <button type="submit" class="btn btn-sm {% if user_liked %}btn-danger{% else %}btn-outline-danger{% endif %}">
                                     <i class="fas fa-heart me-1"></i>{{ project.likes_count }}
                                 </button>
@@ -45,7 +45,7 @@
                             {% endif %}
                             
                             {% if session.is_admin %}
-                            <a href="{{ url_for('admin_project_edit', id=project.id) }}" 
+                            <a href="{{ url_for('main.admin_project_edit', id=project.id) }}" 
                                class="btn btn-sm btn-outline-warning">
                                 <i class="fas fa-edit"></i>
                             </a>
@@ -84,7 +84,7 @@
                 <div class="card-body">
                     {% if session.user_id %}
                     <!-- Comment Form -->
-                    <form method="POST" action="{{ url_for('add_comment', id=project.id) }}" class="mb-4">
+                    <form method="POST" action="{{ url_for('main.add_comment', id=project.id) }}" class="mb-4">
                         {{ form.hidden_tag() }}
                         <div class="mb-3">
                             {{ form.conteudo(class="form-control", placeholder="Deixe seu comentário...") }}
@@ -100,7 +100,7 @@
                     {% else %}
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
-                        <a href="{{ url_for('login') }}">Faça login</a> para deixar um comentário.
+                        <a href="{{ url_for('main.login') }}">Faça login</a> para deixar um comentário.
                     </div>
                     {% endif %}
                     
@@ -135,7 +135,7 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted">Explore outros projetos interessantes!</p>
-                    <a href="{{ url_for('index') }}#projetos" class="btn btn-outline-primary btn-sm">
+                    <a href="{{ url_for('main.index') }}#projetos" class="btn btn-outline-primary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i>Ver Todos os Projetos
                     </a>
                 </div>

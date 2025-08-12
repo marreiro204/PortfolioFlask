@@ -20,7 +20,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
                 <i class="fas fa-code me-2"></i>Portfólio
             </a>
             
@@ -31,12 +31,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">
                             <i class="fas fa-home me-1"></i>Início
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}">
+                        <a class="nav-link" href="{{ url_for('main.about') }}">
                             <i class="fas fa-user me-1"></i>Sobre
                         </a>
                     </li>
@@ -50,24 +50,24 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark">
                                 {% if session.is_admin %}
-                                <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') }}">
                                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard Admin
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 {% endif %}
-                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <li><a class="dropdown-item" href="{{ url_for('main.logout') }}">
                                     <i class="fas fa-sign-out-alt me-2"></i>Sair
                                 </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
+                            <a class="nav-link" href="{{ url_for('main.login') }}">
                                 <i class="fas fa-sign-in-alt me-1"></i>Entrar
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">
+                            <a class="nav-link" href="{{ url_for('main.register') }}">
                                 <i class="fas fa-user-plus me-1"></i>Registrar
                             </a>
                         </li>

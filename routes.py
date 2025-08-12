@@ -1,23 +1,24 @@
 import os
 from datetime import datetime, timedelta
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import desc, func
-from app import app
 from extensions import db
 from models import User, Project, Achievement, Comment, Like, Notification
 from forms import (RegistrationForm, LoginForm, PasswordResetRequestForm, 
                   PasswordResetForm, ProjectForm, AchievementForm, CommentForm)
 from auth import login_required, admin_required, generate_password_reset_token, send_password_reset_email
 
+# Create Blueprint
+main_bp = Blueprint('main', __name__)
+
 # Configure upload folder
 UPLOAD_FOLDER = 'static/uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+# Upload configuration will be set in the app factory
 
 def save_uploaded_file(file):
     """Save uploaded file and return the path"""
@@ -26,16 +27,16 @@ def save_uploaded_file(file):
         # Add timestamp to avoid conflicts
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
         filename = timestamp + filename
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         return f'uploads/{filename}'
     return None
 
 # Authentication Routes
-@app.route('/register', methods=['GET', 'POST'])
+@main_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if 'user_id' in session:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -49,14 +50,14 @@ def register():
         db.session.commit()
         
         flash('Registro realizado com sucesso! Faça login para continuar.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/register.html', form=form)
 
-@app.route('/login', methods=['GET', 'POST'])
+@main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if 'user_id' in session:
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     form = LoginForm()
     if form.validate_on_submit():
@@ -69,23 +70,23 @@ def login():
             
             if form.lembrar.data:
                 session.permanent = True
-                app.permanent_session_lifetime = timedelta(days=30)
+                current_app.permanent_session_lifetime = timedelta(days=30)
             
             next_page = request.args.get('next')
             flash(f'Bem-vindo, {user.nome}!', 'success')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+            return redirect(next_page) if next_page else redirect(url_for('main.index'))
         else:
             flash('Email ou senha incorretos.', 'danger')
     
     return render_template('auth/login.html', form=form)
 
-@app.route('/logout')
+@main_bp.route('/logout')
 def logout():
     session.clear()
     flash('Você foi desconectado.', 'info')
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))
 
-@app.route('/forgot-password', methods=['GET', 'POST'])
+@main_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     form = PasswordResetRequestForm()
     if form.validate_on_submit():
@@ -100,16 +101,16 @@ def forgot_password():
             flash('Instruções para redefinir a senha foram enviadas para seu email.', 'info')
         else:
             flash('Email não encontrado.', 'warning')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/forgot_password.html', form=form)
 
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+@main_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     user = User.query.filter_by(reset_token=token).first()
     if not user or user.reset_token_expires < datetime.utcnow():
         flash('Token inválido ou expirado.', 'danger')
-        return redirect(url_for('forgot_password'))
+        return redirect(url_for('main.forgot_password'))
     
     form = PasswordResetForm()
     if form.validate_on_submit():
@@ -119,12 +120,12 @@ def reset_password(token):
         db.session.commit()
         
         flash('Senha redefinida com sucesso!', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     return render_template('auth/reset_password.html', form=form)
 
 # Public Routes
-@app.route('/')
+@main_bp.route('/')
 def index():
     # Get recent and most liked projects
     recent_projects = Project.query.filter_by(status='published').order_by(desc(Project.criado_em)).limit(6).all()
@@ -132,12 +133,12 @@ def index():
     
     return render_template('index.html', recent_projects=recent_projects, popular_projects=popular_projects)
 
-@app.route('/project/<int:id>')
+@main_bp.route('/project/<int:id>')
 def project_detail(id):
     project = Project.query.get_or_404(id)
     if project.status != 'published' and not (session.get('is_admin')):
         flash('Projeto não encontrado.', 'warning')
-        return redirect(url_for('index'))
+        return redirect(url_for('main.index'))
     
     comments = Comment.query.filter_by(project_id=id).order_by(desc(Comment.criado_em)).all()
     
@@ -151,7 +152,7 @@ def project_detail(id):
     return render_template('project_detail.html', project=project, comments=comments, 
                          user_liked=user_liked, form=form)
 
-@app.route('/project/<int:id>/like', methods=['POST'])
+@main_bp.route('/project/<int:id>/like', methods=['POST'])
 @login_required
 def toggle_like(id):
     project = Project.query.get_or_404(id)
@@ -185,9 +186,9 @@ def toggle_like(id):
     if request.headers.get('Content-Type') == 'application/json':
         return jsonify({'liked': liked, 'likes_count': project.likes_count})
     
-    return redirect(url_for('project_detail', id=id))
+    return redirect(url_for('main.project_detail', id=id))
 
-@app.route('/project/<int:id>/comment', methods=['POST'])
+@main_bp.route('/project/<int:id>/comment', methods=['POST'])
 @login_required
 def add_comment(id):
     project = Project.query.get_or_404(id)
@@ -215,9 +216,9 @@ def add_comment(id):
     else:
         flash('Erro ao adicionar comentário.', 'danger')
     
-    return redirect(url_for('project_detail', id=id))
+    return redirect(url_for('main.project_detail', id=id))
 
-@app.route('/about')
+@main_bp.route('/about')
 def about():
     # Get admin user info and achievements
     admin = User.query.filter_by(is_admin=True).first()
@@ -229,7 +230,7 @@ def about():
     return render_template('about.html', admin=admin, achievements=achievements)
 
 # Admin Routes
-@app.route('/admin')
+@main_bp.route('/admin')
 @admin_required
 def admin_dashboard():
     projects_count = Project.query.count()
@@ -243,13 +244,13 @@ def admin_dashboard():
                          likes_count=likes_count,
                          unread_notifications=unread_notifications)
 
-@app.route('/admin/projects')
+@main_bp.route('/admin/projects')
 @admin_required
 def admin_projects():
     projects = Project.query.order_by(desc(Project.criado_em)).all()
     return render_template('admin/projects.html', projects=projects)
 
-@app.route('/admin/projects/new', methods=['GET', 'POST'])
+@main_bp.route('/admin/projects/new', methods=['GET', 'POST'])
 @admin_required
 def admin_project_new():
     form = ProjectForm()
@@ -273,7 +274,7 @@ def admin_project_new():
     
     return render_template('admin/project_form.html', form=form, title='Novo Projeto')
 
-@app.route('/admin/projects/edit/<int:id>', methods=['GET', 'POST'])
+@main_bp.route('/admin/projects/edit/<int:id>', methods=['GET', 'POST'])
 @admin_required
 def admin_project_edit(id):
     project = Project.query.get_or_404(id)
@@ -298,7 +299,7 @@ def admin_project_edit(id):
     
     return render_template('admin/project_form.html', form=form, project=project, title='Editar Projeto')
 
-@app.route('/admin/projects/delete/<int:id>', methods=['POST'])
+@main_bp.route('/admin/projects/delete/<int:id>', methods=['POST'])
 @admin_required
 def admin_project_delete(id):
     project = Project.query.get_or_404(id)
@@ -307,13 +308,13 @@ def admin_project_delete(id):
     flash('Projeto excluído com sucesso!', 'success')
     return redirect(url_for('admin_projects'))
 
-@app.route('/admin/achievements')
+@main_bp.route('/admin/achievements')
 @admin_required
 def admin_achievements():
     achievements = Achievement.query.filter_by(user_id=session['user_id']).order_by(desc(Achievement.data)).all()
     return render_template('admin/achievements.html', achievements=achievements)
 
-@app.route('/admin/achievements/new', methods=['GET', 'POST'])
+@main_bp.route('/admin/achievements/new', methods=['GET', 'POST'])
 @admin_required
 def admin_achievement_new():
     form = AchievementForm()
@@ -343,7 +344,7 @@ def admin_achievement_new():
     
     return render_template('admin/achievement_form.html', form=form, title='Nova Conquista')
 
-@app.route('/admin/achievements/edit/<int:id>', methods=['GET', 'POST'])
+@main_bp.route('/admin/achievements/edit/<int:id>', methods=['GET', 'POST'])
 @admin_required
 def admin_achievement_edit(id):
     achievement = Achievement.query.get_or_404(id)
@@ -376,7 +377,7 @@ def admin_achievement_edit(id):
     
     return render_template('admin/achievement_form.html', form=form, achievement=achievement, title='Editar Conquista')
 
-@app.route('/admin/achievements/delete/<int:id>', methods=['POST'])
+@main_bp.route('/admin/achievements/delete/<int:id>', methods=['POST'])
 @admin_required
 def admin_achievement_delete(id):
     achievement = Achievement.query.get_or_404(id)
@@ -385,7 +386,7 @@ def admin_achievement_delete(id):
     flash('Conquista excluída com sucesso!', 'success')
     return redirect(url_for('admin_achievements'))
 
-@app.route('/admin/notifications')
+@main_bp.route('/admin/notifications')
 @admin_required
 def admin_notifications():
     notifications = Notification.query.filter_by(user_id=session['user_id']).order_by(desc(Notification.criado_em)).all()

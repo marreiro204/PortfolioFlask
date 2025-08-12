@@ -28,7 +28,7 @@ def admin_required(f):
         user = db.session.get(User, session['user_id'])
         if not user or not user.is_admin:
             flash('Acesso negado. Apenas administradores podem acessar esta página.', 'danger')
-            return redirect(url_for('index'))
+            return redirect(url_for('main.index'))
         return f(*args, **kwargs)
     return decorated_function
 

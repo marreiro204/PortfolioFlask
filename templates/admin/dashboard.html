@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard Administrativo</h2>
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
+        <a href="{{ url_for('main.logout') }}" class="btn btn-outline-secondary">
             <i class="fas fa-sign-out-alt me-1"></i>Sair
         </a>
     </div>
@@ -87,13 +87,13 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('admin_project_new') }}" class="btn btn-primary">
+                        <a href="{{ url_for('main.admin_project_new') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Novo Projeto
                         </a>
-                        <a href="{{ url_for('admin_achievement_new') }}" class="btn btn-success">
+                        <a href="{{ url_for('main.admin_achievement_new') }}" class="btn btn-success">
                             <i class="fas fa-trophy me-2"></i>Nova Conquista
                         </a>
-                        <a href="{{ url_for('admin_notifications') }}" class="btn btn-info">
+                        <a href="{{ url_for('main.admin_notifications') }}" class="btn btn-info">
                             <i class="fas fa-bell me-2"></i>Ver Notificações
                         </a>
                     </div>
@@ -108,13 +108,13 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('admin_projects') }}" class="btn btn-outline-primary">
+                        <a href="{{ url_for('main.admin_projects') }}" class="btn btn-outline-primary">
                             <i class="fas fa-project-diagram me-2"></i>Gerenciar Projetos
                         </a>
-                        <a href="{{ url_for('admin_achievements') }}" class="btn btn-outline-success">
+                        <a href="{{ url_for('main.admin_achievements') }}" class="btn btn-outline-success">
                             <i class="fas fa-medal me-2"></i>Gerenciar Conquistas
                         </a>
-                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-eye me-2"></i>Ver Site Público
                         </a>
                     </div>
