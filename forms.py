@@ -3,7 +3,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, TextAreaField, PasswordField, SelectField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 from models import User
-from app import db
+from extensions import db
 
 class RegistrationForm(FlaskForm):
     nome = StringField('Nome', validators=[DataRequired(), Length(min=2, max=100)])

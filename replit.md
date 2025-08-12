@@ -1,6 +1,6 @@
 # Overview
 
-This is a personal portfolio website built with Flask, designed to showcase projects, skills, and provide contact functionality. The application features a Portuguese interface and uses a dark theme optimized for the Replit environment. The site serves as a professional portfolio for a full-stack developer, with sections for projects, skills, and contact information.
+This is a complete personal portfolio website built with Flask, featuring comprehensive user authentication, admin panel for content management, and public pages for portfolio showcase. The application includes a full-featured authentication system with login, registration, and password recovery, an administrative dashboard for managing projects and achievements, and interactive public pages where users can view, like, and comment on projects. The interface is entirely in Portuguese with a responsive dark theme optimized for the Replit environment.
 
 # User Preferences
 
@@ -18,19 +18,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Backend Architecture
 - **Web Framework**: Flask with SQLAlchemy ORM for database operations
-- **Database Models**: Three main entities - Project, Skill, and Contact with appropriate relationships
-- **Session Management**: Flask sessions with configurable secret key
-- **Error Handling**: Custom 404 error pages and comprehensive exception logging
+- **Authentication System**: Complete user authentication with session management, password hashing using Werkzeug, and role-based access control (admin/user)
+- **File Upload System**: Secure file handling for project and achievement images with proper validation
+- **Form Handling**: WTForms integration with CSRF protection for all user inputs
+- **Session Management**: Flask sessions with permanent session support and configurable secret key
+- **Error Handling**: Custom 404/500 error pages and comprehensive exception logging
 - **Middleware**: ProxyFix for proper HTTPS URL generation in hosted environments
+- **Modular Structure**: Separated extensions.py to resolve circular import dependencies
 
 ## Database Schema
-- **User Model**: Stores user information with id, nome, email, senha_hash, foto_url, criado_em
-- **Project Model**: Stores portfolio projects with id, titulo, descricao, imagem_url, status ('draft'/'published'), criado_em, atualizado_em, user_id (FK)
-- **Achievement Model**: Manages user achievements with id, titulo, descricao, data, imagem_url, user_id (FK)
-- **Comment Model**: Handles project comments with id, conteudo, criado_em, user_id (FK), project_id (FK)
-- **Like Model**: Manages project likes with id, user_id (FK), project_id (FK) - unique constraint prevents duplicate likes
-- **Notification Model**: Stores user notifications with id, tipo, mensagem, lida (boolean), criado_em, user_id (FK)
-- **Database Migration**: Automatic table creation on application startup using SQLite
+- **User Model**: Complete user management with id, nome, email, senha_hash, foto_url, is_admin (boolean), criado_em, reset_token, reset_token_expires for password recovery
+- **Project Model**: Enhanced project storage with id, titulo, descricao, imagem_url, tags (comma-separated), status ('draft'/'published'), likes_count, criado_em, atualizado_em, user_id (FK)
+- **Achievement Model**: User achievements with id, titulo, descricao, data, imagem_url, user_id (FK)
+- **Comment Model**: Project comments with id, conteudo, criado_em, user_id (FK), project_id (FK)
+- **Like Model**: Project likes with id, user_id (FK), project_id (FK) - unique constraint prevents duplicate likes
+- **Notification Model**: Admin notifications with id, tipo ('like'/'comment'), mensagem, lida (boolean), criado_em, user_id (FK)
+- **Database Migration**: Automatic table creation on application startup using SQLite with full relationship mapping
 
 ## Security and Configuration
 - **Environment Variables**: Database URL and session secret configuration
@@ -40,15 +43,18 @@ Preferred communication style: Simple, everyday language.
 # External Dependencies
 
 ## Frontend Libraries
-- **Bootstrap 5**: UI framework with Replit dark theme variant
-- **Font Awesome 6.4.0**: Icon library for consistent UI elements
-- **Custom CSS**: Portfolio-specific styling and responsive design
+- **Bootstrap 5**: UI framework with Replit dark theme variant for consistent dark mode styling
+- **Font Awesome 6.4.0**: Icon library for comprehensive UI iconography
+- **Custom CSS**: Portfolio-specific styling and responsive design enhancements
 
 ## Backend Dependencies
-- **Flask**: Core web framework
-- **Flask-SQLAlchemy**: Database ORM integration
+- **Flask**: Core web framework for routing and request handling
+- **Flask-SQLAlchemy**: Database ORM integration with relationship management
+- **Flask-WTF**: Form handling with CSRF protection and file uploads
+- **WTForms**: Form validation and rendering
 - **SQLAlchemy**: Database abstraction layer with DeclarativeBase
-- **Werkzeug**: WSGI utilities including ProxyFix middleware
+- **Werkzeug**: WSGI utilities including ProxyFix middleware and password hashing
+- **Email-validator**: Email format validation for user registration
 
 ## Database Support
 - **SQLite**: Primary database for development and production (portfolio.db)
@@ -56,6 +62,19 @@ Preferred communication style: Simple, everyday language.
 - **Relationships**: Full foreign key support with cascade delete operations
 
 ## Hosting and Deployment
-- **Replit Integration**: Optimized for Replit hosting environment
-- **HTTPS Support**: ProxyFix configuration for secure connections
+- **Replit Integration**: Optimized for Replit hosting environment with proper workflow configuration
+- **HTTPS Support**: ProxyFix configuration for secure connections in production
 - **Environment Configuration**: Flexible database and session configuration via environment variables
+- **File Storage**: Local file system storage for uploaded images in static/uploads directory
+- **Admin Access**: Default admin account (admin@portfolio.com / admin123) for content management
+
+## Recent Changes (August 12, 2025)
+- ✓ Resolved circular import issue by creating extensions.py for database initialization
+- ✓ Implemented complete authentication system with registration, login, logout, and password recovery
+- ✓ Created comprehensive admin panel with full CRUD operations for projects and achievements
+- ✓ Developed interactive public pages with like/comment functionality for logged-in users
+- ✓ Added notification system to alert admin of new user interactions
+- ✓ Implemented secure file upload system for project and achievement images
+- ✓ Created sample data with 3 projects and 2 achievements for demonstration
+- ✓ Added proper error handling with custom 404/500 pages
+- ✓ Enhanced navigation with dynamic user menu and admin access links

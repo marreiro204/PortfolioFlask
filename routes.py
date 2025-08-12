@@ -4,7 +4,8 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import desc, func
-from app import app, db
+from app import app
+from extensions import db
 from models import User, Project, Achievement, Comment, Like, Notification
 from forms import (RegistrationForm, LoginForm, PasswordResetRequestForm, 
                   PasswordResetForm, ProjectForm, AchievementForm, CommentForm)
