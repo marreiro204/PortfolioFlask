@@ -114,7 +114,7 @@ Senha: admin123
 ## 🚀 Como Executar Localmente
 
 # Clonar repositório
-git clone https://github.com/SEU_USUARIO/PortfolioFlask.git
+git clone https://github.com/marreiro204/PortfolioFlask.git
 cd PortfolioFlask
 
 # Criar ambiente virtual
